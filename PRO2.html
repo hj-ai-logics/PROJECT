@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern JavaScript Calculator</title>
+    <style>
+        /* Reset margins and set background alignment */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #0f172a;
+        }
+
+        /* Calculator glassmorphism container */
+        .calculator {
+            background-color: #1e293b;
+            padding: 24px;
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+            width: 340px;
+        }
+
+        /* Input field display area */
+        .display {
+            width: 100%;
+            height: 80px;
+            background-color: #0f172a;
+            border: none;
+            outline: none;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            color: #f8fafc;
+            font-size: 2rem;
+            text-align: right;
+            padding: 0 16px;
+        }
+
+        /* Layout grid for calculator keys */
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        /* General button styling */
+        button {
+            padding: 20px;
+            border-radius: 12px;
+            border: none;
+            outline: none;
+            font-size: 1.25rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.15s ease, transform 0.05s ease;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        /* Button color categories */
+        .number {
+            background-color: #334155;
+            color: #f8fafc;
+        }
+
+        .number:hover {
+            background-color: #475569;
+        }
+
+        .operator {
+            background-color: #f97316;
+            color: #ffffff;
+        }
+
+        .operator:hover {
+            background-color: #ea580c;
+        }
+
+        .function {
+            background-color: #94a3b8;
+            color: #0f172a;
+        }
+
+        .function:hover {
+            background-color: #cbd5e1;
+        }
+
+        .equal {
+            background-color: #22c55e;
+            color: #ffffff;
+            grid-column: span 2;
+        }
+
+        .equal:hover {
+            background-color: #16a34a;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="calculator">
+        <!-- Display area is set to readonly to prevent typing direct text -->
+        <input type="text" class="display" id="display" placeholder="0" readonly>
+        
+        <div class="buttons">
+            <!-- Functional controls -->
+            <button class="function" onclick="clearDisplay()">C</button>
+            <button class="function" onclick="deleteLast()">DEL</button>
+            <button class="function" onclick="appendValue('%')">%</button>
+            <button class="operator" onclick="appendValue('/')">/</button>
+
+            <!-- Number and mathematical operation grid -->
+            <button class="number" onclick="appendValue('7')">7</button>
+            <button class="number" onclick="appendValue('8')">8</button>
+            <button class="number" onclick="appendValue('9')">9</button>
+            <button class="operator" onclick="appendValue('*')">*</button>
+
+            <button class="number" onclick="appendValue('4')">4</button>
+            <button class="number" onclick="appendValue('5')">5</button>
+            <button class="number" onclick="appendValue('6')">6</button>
+            <button class="operator" onclick="appendValue('-')">-</button>
+
+            <button class="number" onclick="appendValue('1')">1</button>
+            <button class="number" onclick="appendValue('2')">2</button>
+            <button class="number" onclick="appendValue('3')">3</button>
+            <button class="operator" onclick="appendValue('+')">+</button>
+
+            <button class="number" onclick="appendValue('0')">0</button>
+            <button class="number" onclick="appendValue('.')">.</button>
+            <button class="equal" onclick="calculateResult()">=</button>
+        </div>
+    </div>
+
+    <script>
+        const display = document.getElementById('display');
+
+        // Add a character or mathematical operator to the display window
+        function appendValue(val) {
+            // Prevent user from beginning their expression with multiple operators
+            if (display.value === "" && ['+', '*', '/', '%'].includes(val)) {
+                return;
+            }
+            display.value += val;
+        }
+
+        // Wipe the entire display back to an empty state
+        function clearDisplay() {
+            display.value = "";
+        }
+
+        // Drop the last character from the input screen
+        function deleteLast() {
+            display.value = display.value.toString().slice(0, -1);
+        }
+
+        // Evaluate the string expression inside the screen and return the answer
+        function calculateResult() {
+            try {
+                // Safeguard against hitting '=' on an empty screen
+                if (display.value.trim() === "") return;
+
+                // Evaluate the expression string safely 
+                let result = eval(display.value);
+
+                // Handle scenarios that generate mathematically undefined states (e.g., 0/0)
+                if (isNaN(result) || !isFinite(result)) {
+                    display.value = "Error";
+                } else {
+                    display.value = result;
+                }
+            } catch (error) {
+                // Catches compilation bugs like trailing operators (e.g., "5++")
+                display.value = "Error";
+            }
+        }
+    </script>
+</body>
+</html>
